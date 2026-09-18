@@ -1,0 +1,14 @@
+# Backend
+backend/target/
+
+# Environment / secrets
+backend/src/main/resources/application.properties
+
+# IDE
+.vscode/
+.idea/
+*.iml
+
+# OS
+.DS_Store
+Thumbs.db
