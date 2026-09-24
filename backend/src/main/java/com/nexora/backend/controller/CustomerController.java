@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.nexora.backend.entity.Customer;
@@ -24,16 +25,24 @@ public class CustomerController {
     private final CustomerService customerService;
 
     public CustomerController(CustomerService customerService) {
+
         this.customerService = customerService;
     }
 
     @GetMapping
-    public List<Customer> getAllCustomers() {
+    public List<Customer> getAllCustomers(
+            @RequestParam(required = false) String search) {
+
+        if (search != null && !search.isBlank()) {
+            return customerService.searchCustomers(search);
+        }
+
         return customerService.getAllCustomers();
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Customer> getCustomerById(@PathVariable Long id) {
+
         return customerService.getCustomerById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
@@ -41,6 +50,7 @@ public class CustomerController {
 
     @PostMapping
     public Customer createCustomer(@Valid @RequestBody Customer customer) {
+
         return customerService.saveCustomer(customer);
     }
 
@@ -80,4 +90,5 @@ public class CustomerController {
 
         return ResponseEntity.noContent().build();
     }
+
 }

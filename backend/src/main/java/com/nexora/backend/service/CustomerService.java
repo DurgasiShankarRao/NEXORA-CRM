@@ -15,20 +15,30 @@ import com.nexora.backend.repository.UserRepository;
 public class CustomerService {
 
     private final CustomerRepository customerRepository;
+
     private final UserRepository userRepository;
 
     public CustomerService(CustomerRepository customerRepository,
                            UserRepository userRepository) {
+
         this.customerRepository = customerRepository;
+
         this.userRepository = userRepository;
     }
 
     public List<Customer> getAllCustomers() {
+
         return customerRepository.findAll();
     }
 
     public Optional<Customer> getCustomerById(Long id) {
+
         return customerRepository.findById(id);
+    }
+
+    public List<Customer> searchCustomers(String search) {
+
+        return customerRepository.findByFullNameContainingIgnoreCase(search);
     }
 
     public Customer saveCustomer(Customer customer) {
@@ -48,6 +58,7 @@ public class CustomerService {
         LocalDateTime now = LocalDateTime.now();
 
         if (customer.getCreatedAt() == null) {
+
             customer.setCreatedAt(now);
         }
 
@@ -57,6 +68,8 @@ public class CustomerService {
     }
 
     public void deleteCustomer(Long id) {
+
         customerRepository.deleteById(id);
     }
+
 }
