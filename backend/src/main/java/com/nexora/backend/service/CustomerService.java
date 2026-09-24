@@ -7,6 +7,7 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 
 import com.nexora.backend.entity.Customer;
+import com.nexora.backend.entity.CustomerStatus;
 import com.nexora.backend.entity.User;
 import com.nexora.backend.repository.CustomerRepository;
 import com.nexora.backend.repository.UserRepository;
@@ -24,21 +25,117 @@ public class CustomerService {
         this.customerRepository = customerRepository;
 
         this.userRepository = userRepository;
+
     }
 
     public List<Customer> getAllCustomers() {
 
         return customerRepository.findAll();
+
     }
 
     public Optional<Customer> getCustomerById(Long id) {
 
         return customerRepository.findById(id);
+
     }
 
     public List<Customer> searchCustomers(String search) {
 
         return customerRepository.findByFullNameContainingIgnoreCase(search);
+
+    }
+
+    public List<Customer> searchCustomersByEmail(String email) {
+
+        return customerRepository.findByEmailContainingIgnoreCase(email);
+
+    }
+
+    public List<Customer> searchCustomersByPhone(String phone) {
+
+        return customerRepository.findByPhoneContaining(phone);
+
+    }
+
+    public List<Customer> searchCustomersByCompany(String company) {
+
+        return customerRepository.findByCompanyContainingIgnoreCase(company);
+
+    }
+
+    public List<Customer> searchCustomersBySource(String source) {
+
+        return customerRepository.findBySourceContainingIgnoreCase(source);
+
+    }
+
+    public List<Customer> searchCustomersByAddress(String address) {
+
+        return customerRepository.findByAddressContainingIgnoreCase(address);
+
+    }
+
+    public List<Customer> searchCustomersByNotes(String notes) {
+
+        return customerRepository.findByNotesContainingIgnoreCase(notes);
+
+    }
+
+    public List<Customer> getCustomersByAssignedUser(Long userId) {
+
+        return customerRepository.findByAssignedToId(userId);
+
+    }
+
+    public List<Customer> getCustomersByStatus(CustomerStatus status) {
+
+        return customerRepository.findByStatus(status);
+
+    }
+
+    public List<Customer> searchCustomersWithFilters(
+
+            String search,
+
+            String email,
+
+            String phone,
+
+            String company,
+
+            String source,
+
+            String address,
+
+            String notes,
+
+            Long assignedTo,
+
+            CustomerStatus status) {
+
+        return customerRepository.searchCustomersWithFilters(
+
+                search,
+
+                email,
+
+                phone,
+
+                company,
+
+                source,
+
+                address,
+
+                notes,
+
+                assignedTo,
+
+                status
+
+        );
+
     }
 
     public Customer saveCustomer(Customer customer) {
@@ -60,16 +157,19 @@ public class CustomerService {
         if (customer.getCreatedAt() == null) {
 
             customer.setCreatedAt(now);
+
         }
 
         customer.setUpdatedAt(now);
 
         return customerRepository.save(customer);
+
     }
 
     public void deleteCustomer(Long id) {
 
         customerRepository.deleteById(id);
+
     }
 
 }
