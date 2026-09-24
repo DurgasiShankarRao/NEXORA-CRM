@@ -7,15 +7,20 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 
 import com.nexora.backend.entity.Customer;
+import com.nexora.backend.entity.User;
 import com.nexora.backend.repository.CustomerRepository;
+import com.nexora.backend.repository.UserRepository;
 
 @Service
 public class CustomerService {
 
     private final CustomerRepository customerRepository;
+    private final UserRepository userRepository;
 
-    public CustomerService(CustomerRepository customerRepository) {
+    public CustomerService(CustomerRepository customerRepository,
+                           UserRepository userRepository) {
         this.customerRepository = customerRepository;
+        this.userRepository = userRepository;
     }
 
     public List<Customer> getAllCustomers() {
@@ -27,6 +32,18 @@ public class CustomerService {
     }
 
     public Customer saveCustomer(Customer customer) {
+
+        if (customer.getAssignedTo() != null &&
+            customer.getAssignedTo().getId() != null) {
+
+            Long userId = customer.getAssignedTo().getId();
+
+            User user = userRepository.findById(userId)
+                    .orElseThrow(() ->
+                            new RuntimeException("Assigned user not found"));
+
+            customer.setAssignedTo(user);
+        }
 
         LocalDateTime now = LocalDateTime.now();
 

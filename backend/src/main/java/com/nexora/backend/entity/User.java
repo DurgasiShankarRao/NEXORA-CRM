@@ -1,5 +1,7 @@
 package com.nexora.backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -24,6 +26,7 @@ public class User {
     @Column(nullable = false, unique = true, length = 150)
     private String email;
 
+    @JsonIgnore
     @Column(nullable = false, length = 255)
     private String password;
 
@@ -40,7 +43,12 @@ public class User {
     public User() {
     }
 
-    public User(String fullName, String email, String password, String phone, Role role) {
+    public User(String fullName,
+                String email,
+                String password,
+                String phone,
+                Role role) {
+
         this.fullName = fullName;
         this.email = email;
         this.password = password;
@@ -73,6 +81,7 @@ public class User {
         this.email = email;
     }
 
+    @JsonIgnore
     public String getPassword() {
         return password;
     }

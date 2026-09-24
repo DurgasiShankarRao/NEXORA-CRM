@@ -7,13 +7,12 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.PutMapping;
 
 import com.nexora.backend.entity.Customer;
-
 import com.nexora.backend.service.CustomerService;
 
 import jakarta.validation.Valid;
@@ -35,7 +34,6 @@ public class CustomerController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Customer> getCustomerById(@PathVariable Long id) {
-
         return customerService.getCustomerById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
@@ -62,6 +60,7 @@ public class CustomerController {
                     existingCustomer.setSource(customer.getSource());
                     existingCustomer.setAddress(customer.getAddress());
                     existingCustomer.setNotes(customer.getNotes());
+                    existingCustomer.setAssignedTo(customer.getAssignedTo());
 
                     return ResponseEntity.ok(
                             customerService.saveCustomer(existingCustomer)
