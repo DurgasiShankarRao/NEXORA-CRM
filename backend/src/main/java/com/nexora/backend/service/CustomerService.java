@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.nexora.backend.entity.Customer;
@@ -94,7 +96,7 @@ public class CustomerService {
 
     }
 
-    public List<Customer> searchCustomersWithFilters(
+    public Page<Customer> searchCustomersWithFilters(
 
             String search,
 
@@ -112,7 +114,9 @@ public class CustomerService {
 
             Long assignedTo,
 
-            CustomerStatus status) {
+            CustomerStatus status,
+
+            Pageable pageable) {
 
         return customerRepository.searchCustomersWithFilters(
 
@@ -132,7 +136,9 @@ public class CustomerService {
 
                 assignedTo,
 
-                status
+                status,
+
+                pageable
 
         );
 
@@ -146,6 +152,7 @@ public class CustomerService {
             Long userId = customer.getAssignedTo().getId();
 
             User user = userRepository.findById(userId)
+
                     .orElseThrow(() ->
                             new RuntimeException("Assigned user not found"));
 
