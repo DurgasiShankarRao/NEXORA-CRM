@@ -1,9 +1,9 @@
 package com.nexora.backend.repository;
 
-import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -31,6 +31,12 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
 
     List<Customer> findByAssignedToId(Long userId);
 
+    long countByStatus(CustomerStatus status);
+
+    long countByAssignedToIsNotNull();
+
+    long countByAssignedToIsNull();
+
     @Query("""
         SELECT c
         FROM Customer c
@@ -45,27 +51,15 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
         AND (:status IS NULL OR c.status = :status)
         """)
     Page<Customer> searchCustomersWithFilters(
-
             @Param("search") String search,
-
             @Param("email") String email,
-
             @Param("phone") String phone,
-
             @Param("company") String company,
-
             @Param("source") String source,
-
             @Param("address") String address,
-
             @Param("notes") String notes,
-
             @Param("assignedTo") Long assignedTo,
-
             @Param("status") CustomerStatus status,
-
             Pageable pageable
-
     );
-
 }

@@ -144,6 +144,30 @@ public class CustomerService {
 
     }
 
+    public long getTotalCustomers() {
+
+        return customerRepository.count();
+
+    }
+
+    public long getCustomersByStatusCount(CustomerStatus status) {
+
+        return customerRepository.countByStatus(status);
+
+    }
+
+    public long getAssignedCustomersCount() {
+
+        return customerRepository.countByAssignedToIsNotNull();
+
+    }
+
+    public long getUnassignedCustomersCount() {
+
+        return customerRepository.countByAssignedToIsNull();
+
+    }
+
     public Customer saveCustomer(Customer customer) {
 
         if (customer.getAssignedTo() != null &&

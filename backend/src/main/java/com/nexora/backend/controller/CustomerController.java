@@ -1,5 +1,7 @@
 package com.nexora.backend.controller;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Set;
 
 import org.springframework.data.domain.Page;
@@ -46,99 +48,184 @@ public class CustomerController {
     );
 
     public CustomerController(CustomerService customerService) {
+
         this.customerService = customerService;
+
     }
 
     @GetMapping
     public Page<Customer> getAllCustomers(
+
             @RequestParam(required = false) String search,
+
             @RequestParam(required = false) String email,
+
             @RequestParam(required = false) String phone,
+
             @RequestParam(required = false) String company,
+
             @RequestParam(required = false) String source,
+
             @RequestParam(required = false) String address,
+
             @RequestParam(required = false) String notes,
+
             @RequestParam(required = false) Long assignedTo,
+
             @RequestParam(required = false) CustomerStatus status,
+
             @RequestParam(defaultValue = "0") int page,
+
             @RequestParam(defaultValue = "10") int size,
+
             @RequestParam(defaultValue = "createdAt") String sortBy,
+
             @RequestParam(defaultValue = "desc") String direction) {
 
         if (!ALLOWED_SORT_FIELDS.contains(sortBy)) {
+
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
                     "Invalid sort field: " + sortBy
             );
+
         }
 
         Sort sort = direction.equalsIgnoreCase("asc")
+
                 ? Sort.by(sortBy).ascending()
+
                 : Sort.by(sortBy).descending();
 
         Pageable pageable = PageRequest.of(page, size, sort);
 
         return customerService.searchCustomersWithFilters(
+
                 search,
+
                 email,
+
                 phone,
+
                 company,
+
                 source,
+
                 address,
+
                 notes,
+
                 assignedTo,
+
                 status,
+
                 pageable
+
         );
+
+    }
+
+    @GetMapping("/stats")
+    public Map<String, Long> getCustomerStatistics() {
+
+        Map<String, Long> statistics = new LinkedHashMap<>();
+
+        statistics.put("totalCustomers",
+                customerService.getTotalCustomers());
+
+        statistics.put("leads",
+                customerService.getCustomersByStatusCount(CustomerStatus.LEAD));
+
+        statistics.put("prospects",
+                customerService.getCustomersByStatusCount(CustomerStatus.PROSPECT));
+
+        statistics.put("customers",
+                customerService.getCustomersByStatusCount(CustomerStatus.CUSTOMER));
+
+        statistics.put("inactive",
+                customerService.getCustomersByStatusCount(CustomerStatus.INACTIVE));
+
+        statistics.put("assignedCustomers",
+                customerService.getAssignedCustomersCount());
+
+        statistics.put("unassignedCustomers",
+                customerService.getUnassignedCustomersCount());
+
+        return statistics;
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Customer> getCustomerById(@PathVariable Long id) {
 
         return customerService.getCustomerById(id)
+
                 .map(ResponseEntity::ok)
+
                 .orElse(ResponseEntity.notFound().build());
+
     }
 
     @PostMapping
     public Customer createCustomer(@Valid @RequestBody Customer customer) {
+
         return customerService.saveCustomer(customer);
+
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Customer> updateCustomer(
+
             @PathVariable Long id,
+
             @Valid @RequestBody Customer customer) {
 
         return customerService.getCustomerById(id)
+
                 .map(existingCustomer -> {
 
                     existingCustomer.setFullName(customer.getFullName());
+
                     existingCustomer.setEmail(customer.getEmail());
+
                     existingCustomer.setPhone(customer.getPhone());
+
                     existingCustomer.setCompany(customer.getCompany());
+
                     existingCustomer.setStatus(customer.getStatus());
+
                     existingCustomer.setSource(customer.getSource());
+
                     existingCustomer.setAddress(customer.getAddress());
+
                     existingCustomer.setNotes(customer.getNotes());
+
                     existingCustomer.setAssignedTo(customer.getAssignedTo());
 
                     return ResponseEntity.ok(
+
                             customerService.saveCustomer(existingCustomer)
+
                     );
+
                 })
+
                 .orElse(ResponseEntity.notFound().build());
+
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteCustomer(@PathVariable Long id) {
 
         if (customerService.getCustomerById(id).isEmpty()) {
+
             return ResponseEntity.notFound().build();
+
         }
 
         customerService.deleteCustomer(id);
 
         return ResponseEntity.noContent().build();
+
     }
+
 }
